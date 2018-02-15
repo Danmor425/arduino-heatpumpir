@@ -1,3 +1,5 @@
+
+
 #include <DaikinHeatpumpIR.h>
 
 DaikinHeatpumpIR::DaikinHeatpumpIR() : HeatpumpIR()
@@ -18,6 +20,7 @@ void DaikinHeatpumpIR::send(IRSender& IR, uint8_t powerModeCmd, uint8_t operatin
   uint8_t operatingMode = DAIKIN_AIRCON_MODE_OFF | DAIKIN_AIRCON_MODE_AUTO;
   uint8_t fanSpeed      = DAIKIN_AIRCON_FAN_AUTO;
   uint8_t temperature   = 23;
+  uint8_t swingH = HDIR_AUTO;
 
   switch (powerModeCmd)
   {
@@ -67,15 +70,32 @@ void DaikinHeatpumpIR::send(IRSender& IR, uint8_t powerModeCmd, uint8_t operatin
     case FAN_5:
       fanSpeed = DAIKIN_AIRCON_FAN5;
       break;
+	case FAN_QUIET:
+      fanSpeed = DAIKIN_AIRCON_FAN_QUIET;
+      break;
   }
 
+  switch (swingVCmd)
+  {
+    case VDIR_SWING:
+      fanSpeed |= DAIKIN_AIRCON_VSWING;
+      break;
+  }
+  
+  switch (swingHCmd)
+  {
+    case HDIR_SWING:
+      swingH = DAIKIN_AIRCON_HSWING;
+      break;
+  }
+  
   if ((operatingModeCmd == MODE_HEAT && temperatureCmd >= 10 && temperatureCmd <= 30) ||
       (temperatureCmd >= 18 && temperatureCmd <= 30))
   {
     temperature = temperatureCmd << 1;
   }
 
-  sendDaikin(IR, operatingMode, fanSpeed, temperature, swingVCmd, swingHCmd);
+  sendDaikin(IR, operatingMode, fanSpeed, temperature, swingVCmd, swingH);
 }
 
 
@@ -83,7 +103,6 @@ void DaikinHeatpumpIR::send(IRSender& IR, uint8_t powerModeCmd, uint8_t operatin
 void DaikinHeatpumpIR::sendDaikin(IRSender& IR, uint8_t operatingMode, uint8_t fanSpeed, uint8_t temperature, uint8_t swingV, uint8_t swingH)
 {
   (void)swingV;
-  (void)swingH;
 
   uint8_t daikinTemplate[35] = {
     0x11, 0xDA, 0x27, 0x00, 0xC5, 0x00, 0x00, 0xD7, // First header
@@ -96,6 +115,7 @@ void DaikinHeatpumpIR::sendDaikin(IRSender& IR, uint8_t operatingMode, uint8_t f
   daikinTemplate[21] = operatingMode;
   daikinTemplate[22] = temperature;
   daikinTemplate[24] = fanSpeed;
+  daikinTemplate[25] = swingH;
 
   // Checksum calculation
   // * Checksums at bytes 7 and 15 are calculated the same way

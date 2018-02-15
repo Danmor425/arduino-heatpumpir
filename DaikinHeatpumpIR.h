@@ -23,13 +23,15 @@
 #define DAIKIN_AIRCON_MODE_FAN   0x60
 #define DAIKIN_AIRCON_MODE_OFF   0x00 // Power OFF
 #define DAIKIN_AIRCON_MODE_ON    0x01
-#define DAIKIN_AIRCON_FAN_AUTO   0xA0 // Fan speed
+#define DAIKIN_AIRCON_FAN_QUIET  0xB0 // Fan speed
+#define DAIKIN_AIRCON_FAN_AUTO   0xA0
 #define DAIKIN_AIRCON_FAN1       0x30
 #define DAIKIN_AIRCON_FAN2       0x40
 #define DAIKIN_AIRCON_FAN3       0x50
 #define DAIKIN_AIRCON_FAN4       0x60
 #define DAIKIN_AIRCON_FAN5       0x70
-
+#define DAIKIN_AIRCON_VSWING     0x0F // Swing
+#define DAIKIN_AIRCON_HSWING     0x0F
 
 class DaikinHeatpumpIR : public HeatpumpIR
 {
